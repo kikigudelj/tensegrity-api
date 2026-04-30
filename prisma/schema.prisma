@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                  String      @id @default(cuid())
+  email               String      @unique
+  password            String
+  firstName           String
+  lastName            String
+  dateOfBirth         DateTime?
+  gender              Gender?
+  phoneNumber         String?
+  occupation          Occupation?
+  role                Role        @default(CLIENT) //jedino je Marko admin
+  status              UserStatus  @default(PENDING)//admin odobrava zahtjeve
+  clientType          ClientType? //online ili uživo
+
+  isInRehabilitation  Boolean     @default(false)
+  //ciljevi
+  mainGoal            String?
+  goalReason          String?
+  successCriteria     String?
+
+  onboardingCompleted Boolean     @default(false) //kad se klijent prvi put ulogira izbaci mu se forma za ispunjavanje cijeva i dokumenata, nakon toga se onboarding oznaci sa true ako se klikne na gumb POTVRDI na kraju forme, kasnije se može dorađivati
+
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt //kad uredi klijent može se vidjeti
+
+  documents           UserDocument[]
+}
+
+//za odricanje odgovornosti napraviti samo kratki upitnik gdje se oznaci kvacica?
+model UserDocument {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  type        DocumentType // LIABILITY ili MEDICAL
+ // accepted    Boolean  @default(false)
+ // filled      Boolean  @default(false) //mislim da ne treba jer ce se samo dodati u listu dokumenata
+  fileUrl     String?
+  updatedAt   DateTime     @updatedAt
+}
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum Occupation {
+  SEDENTARY
+  PHYSICALLY_ACTIVE
+}
+
+enum Role {
+  CLIENT
+  ADMIN
+}
+
+enum ClientType {
+  ONLINE
+  IN_PERSON
+}
+
+enum UserStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum DocumentType {
+  LIABILITY
+  MEDICAL
+}
