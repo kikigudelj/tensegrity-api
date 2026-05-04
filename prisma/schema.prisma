@@ -9,6 +9,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -25,17 +26,19 @@ model User {
   status              UserStatus  @default(PENDING)//admin odobrava zahtjeve
   clientType          ClientType? //online ili uživo
 
-  isInRehabilitation  Boolean     @default(false)
-  //ciljevi
+  // ispunjava se u drugom koraku
+  //ciljevi 
   mainGoal            String?
   goalReason          String?
   successCriteria     String?
-
+  isInRehabilitation  Boolean     @default(false)
+  medicalHistory      Json?        // online upitnik (ako nije uploadan PDF)
+  liabilityAccepted   Boolean      @default(false) // je li označio kvačicu da se slaže sa uvjetima korištenja
   onboardingCompleted Boolean     @default(false) //kad se klijent prvi put ulogira izbaci mu se forma za ispunjavanje cijeva i dokumenata, nakon toga se onboarding oznaci sa true ako se klikne na gumb POTVRDI na kraju forme, kasnije se može dorađivati
 
   createdAt           DateTime    @default(now())
   updatedAt           DateTime    @updatedAt //kad uredi klijent može se vidjeti
-
+  refreshToken        String? //sprema refresh token u bazu 
   documents           UserDocument[]
 }
 
@@ -45,6 +48,7 @@ model UserDocument {
   userId      String
   user        User     @relation(fields: [userId], references: [id])
   type        DocumentType // LIABILITY ili MEDICAL
+  createdAt   DateTime     
  // accepted    Boolean  @default(false)
  // filled      Boolean  @default(false) //mislim da ne treba jer ce se samo dodati u listu dokumenata
   fileUrl     String?
