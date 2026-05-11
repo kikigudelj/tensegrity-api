@@ -5,6 +5,7 @@ import { AdminModule } from './admin/admin.module';
 import { UserModule } from './user/user.module';
 import { ExerciseModule } from './exercise/exercise.module';
 import { PrismaModule } from '../prisma/prisma.module';
+import { WorkoutModule } from './workout/workout.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -16,6 +17,7 @@ import { PrismaModule } from '../prisma/prisma.module';
     UserModule,
     ExerciseModule,
     PrismaModule,
+    WorkoutModule,
   ],
 })
 export class AppModule {}
